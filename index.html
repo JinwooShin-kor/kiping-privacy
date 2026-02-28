@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kiping - 개인정보처리방침</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8f9fa;
+      color: #1a1a2e;
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1D4ED8;
+      margin-bottom: 8px;
+    }
+    .header .app-name {
+      font-size: 15px;
+      color: #64748b;
+      font-weight: 500;
+    }
+    .header .date {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 12px;
+    }
+    h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-top: 40px;
+      margin-bottom: 16px;
+      padding-left: 14px;
+      border-left: 3px solid #1D4ED8;
+    }
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #334155;
+      margin-top: 24px;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 15px;
+      color: #475569;
+      margin-bottom: 12px;
+    }
+    ul, ol {
+      padding-left: 20px;
+      margin-bottom: 12px;
+    }
+    li {
+      font-size: 15px;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 20px;
+      font-size: 14px;
+    }
+    th {
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 600;
+      padding: 12px 14px;
+      text-align: left;
+      border: 1px solid #e2e8f0;
+    }
+    td {
+      padding: 10px 14px;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      vertical-align: top;
+    }
+    .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+    .info-box p {
+      color: #1e40af;
+      margin: 0;
+      font-size: 14px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 60px;
+      padding-top: 24px;
+      border-top: 1px solid #e2e8f0;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+    @media (max-width: 600px) {
+      .container { padding: 24px 16px 60px; }
+      .header h1 { font-size: 24px; }
+      h2 { font-size: 18px; }
+      table { font-size: 13px; }
+      th, td { padding: 8px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>개인정보처리방침</h1>
+      <div class="app-name">Kiping (키핑) - AI 뉴스 키워드 모니터링</div>
+      <div class="date">시행일: 2026년 2월 22일 | 최종 수정일: 2026년 2월 22일</div>
+    </div>
+
+    <p>
+      Kiping(이하 "서비스")은 이용자의 개인정보를 중요하게 생각하며, 「개인정보 보호법」 등 관련 법령을 준수합니다.
+      본 개인정보처리방침은 서비스가 수집하는 개인정보의 항목, 수집 목적, 보관 기간 및 이용자의 권리에 대해 안내합니다.
+    </p>
+
+    <h2>1. 수집하는 개인정보 항목</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>구분</th>
+          <th>수집 항목</th>
+          <th>수집 방법</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>회원가입</td>
+          <td>이메일 주소, 이름(닉네임), 프로필 사진 URL</td>
+          <td>Google/Kakao 소셜 로그인</td>
+        </tr>
+        <tr>
+          <td>서비스 이용</td>
+          <td>등록 키워드, 키워드 상세 설명, 관심 분야, 뉴스 열람 기록, 좋아요/댓글 활동</td>
+          <td>앱 내 직접 입력 및 자동 수집</td>
+        </tr>
+        <tr>
+          <td>알림</td>
+          <td>FCM 푸시 토큰, 알림 설정(ON/OFF, 빈도, 조용한 시간대)</td>
+          <td>기기에서 자동 생성</td>
+        </tr>
+        <tr>
+          <td>커뮤니티</td>
+          <td>게시글 제목/내용, 업로드 이미지/영상, 해시태그</td>
+          <td>앱 내 직접 입력</td>
+        </tr>
+        <tr>
+          <td>자동 수집</td>
+          <td>기기 정보(OS 종류), 앱 사용 통계(화면 방문 기록), 활동 히트맵</td>
+          <td>서비스 이용 시 자동 수집</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="info-box">
+      <p>Kiping은 주민등록번호, 결제 정보, 위치 정보 등 민감한 개인정보를 수집하지 않습니다.</p>
+    </div>
+
+    <h2>2. 개인정보의 수집 및 이용 목적</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>목적</th>
+          <th>상세 설명</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>회원 관리</td>
+          <td>회원 식별, 로그인 인증, 계정 관리</td>
+        </tr>
+        <tr>
+          <td>맞춤형 뉴스 제공</td>
+          <td>등록된 키워드 기반 뉴스 매칭 및 피드 생성</td>
+        </tr>
+        <tr>
+          <td>AI 분석</td>
+          <td>뉴스 기사의 키워드 관련도 분석, 일일 AI 리포트 생성, 홈 인사이트 생성</td>
+        </tr>
+        <tr>
+          <td>알림 발송</td>
+          <td>키워드 매칭 뉴스 실시간 푸시 알림, 인앱 알림</td>
+        </tr>
+        <tr>
+          <td>커뮤니티 운영</td>
+          <td>게시글 작성/관리, 좋아요/댓글 기능, 그룹 운영</td>
+        </tr>
+        <tr>
+          <td>서비스 개선</td>
+          <td>사용 통계 분석, 인기 키워드 파악, 서비스 품질 향상</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>3. 개인정보의 보유 및 이용 기간</h2>
+    <ul>
+      <li><strong>회원 탈퇴 시:</strong> 지체 없이 파기합니다.</li>
+      <li><strong>뉴스 기사 데이터:</strong> 수집일로부터 30일 후 자동 삭제됩니다.</li>
+      <li><strong>활동 기록:</strong> 최근 90일간 보관 후 자동 삭제됩니다.</li>
+      <li><strong>커뮤니티 게시글:</strong> 회원 탈퇴 또는 직접 삭제 시 파기됩니다.</li>
+      <li><strong>FCM 토큰:</strong> 로그아웃 또는 회원 탈퇴 시 즉시 삭제됩니다.</li>
+    </ul>
+    <p>단, 관련 법령에 따라 보관이 필요한 경우 해당 기간 동안 보관합니다.</p>
+
+    <h2>4. 개인정보의 제3자 제공</h2>
+    <p>Kiping은 원칙적으로 이용자의 개인정보를 외부에 제공하지 않습니다. 다만, 서비스 운영을 위해 다음의 외부 서비스를 이용합니다:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>서비스</th>
+          <th>제공 업체</th>
+          <th>이용 목적</th>
+          <th>제공 항목</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>인증 및 데이터베이스</td>
+          <td>Supabase Inc.</td>
+          <td>회원 인증, 데이터 저장</td>
+          <td>이메일, 프로필, 키워드, 활동 데이터</td>
+        </tr>
+        <tr>
+          <td>푸시 알림</td>
+          <td>Google (Firebase Cloud Messaging)</td>
+          <td>푸시 알림 전송</td>
+          <td>FCM 토큰, 알림 내용</td>
+        </tr>
+        <tr>
+          <td>AI 분석</td>
+          <td>Anthropic</td>
+          <td>뉴스 관련도 분석, AI 리포트 생성</td>
+          <td>뉴스 기사 제목/내용 (비식별 데이터)</td>
+        </tr>
+        <tr>
+          <td>소셜 로그인</td>
+          <td>Google, Kakao</td>
+          <td>간편 로그인</td>
+          <td>인증 토큰 (OAuth)</td>
+        </tr>
+        <tr>
+          <td>미디어 저장</td>
+          <td>Supabase Storage</td>
+          <td>커뮤니티 이미지/영상 저장</td>
+          <td>업로드 미디어 파일</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>5. 개인정보의 파기 절차 및 방법</h2>
+    <ul>
+      <li>이용 목적이 달성되거나 보유 기간이 경과한 개인정보는 지체 없이 파기합니다.</li>
+      <li>전자적 파일: 복구 불가능한 방법으로 영구 삭제합니다.</li>
+      <li>커뮤니티 미디어 파일: 게시글 삭제 시 스토리지에서 함께 삭제됩니다.</li>
+    </ul>
+
+    <h2>6. 이용자의 권리 및 행사 방법</h2>
+    <p>이용자는 언제든지 다음의 권리를 행사할 수 있습니다:</p>
+    <ul>
+      <li><strong>개인정보 열람 요청:</strong> 앱 내 설정에서 본인의 정보를 확인할 수 있습니다.</li>
+      <li><strong>개인정보 수정:</strong> 프로필, 키워드, 알림 설정 등을 직접 수정할 수 있습니다.</li>
+      <li><strong>회원 탈퇴:</strong> 앱 내 설정에서 계정 삭제를 요청할 수 있으며, 모든 데이터가 즉시 삭제됩니다.</li>
+      <li><strong>알림 수신 거부:</strong> 앱 내 설정 또는 기기 설정에서 푸시 알림을 비활성화할 수 있습니다.</li>
+      <li><strong>게시글 삭제:</strong> 본인이 작성한 커뮤니티 게시글 및 댓글을 직접 삭제할 수 있습니다.</li>
+    </ul>
+
+    <h2>7. 개인정보의 안전성 확보 조치</h2>
+    <p>Kiping은 이용자의 개인정보를 안전하게 보호하기 위해 다음과 같은 조치를 취합니다:</p>
+    <ul>
+      <li>모든 데이터 전송 시 SSL/TLS 암호화 적용</li>
+      <li>데이터베이스 접근 시 행 수준 보안(Row Level Security) 적용</li>
+      <li>API 호출 시 JWT 기반 인증 적용</li>
+      <li>비밀번호는 저장하지 않음 (소셜 로그인만 지원)</li>
+      <li>서비스 키 및 민감 정보는 환경 변수로 안전하게 관리</li>
+    </ul>
+
+    <h2>8. 쿠키 및 자동 수집 장치</h2>
+    <p>Kiping 모바일 앱은 쿠키를 사용하지 않습니다. 서비스 이용 과정에서 앱 사용 통계(화면 방문 횟수)가 자동으로 수집되며, 이는 서비스 개선 목적으로만 사용됩니다.</p>
+
+    <h2>9. 만 14세 미만 아동의 개인정보</h2>
+    <p>Kiping은 만 14세 미만 아동의 회원가입을 제한하지 않으나, 아동의 개인정보를 별도로 수집하지 않습니다. 법정대리인이 아동의 개인정보 처리에 동의하지 않는 경우, 해당 아동의 계정 삭제를 요청할 수 있습니다.</p>
+
+    <h2>10. 개인정보처리방침의 변경</h2>
+    <p>본 개인정보처리방침은 관련 법령 및 서비스 변경에 따라 수정될 수 있습니다. 변경 시 앱 내 공지 또는 본 페이지를 통해 안내합니다.</p>
+
+    <h2>11. 개인정보 보호 책임자 및 문의</h2>
+    <table>
+      <tbody>
+        <tr>
+          <td><strong>서비스명</strong></td>
+          <td>Kiping (키핑)</td>
+        </tr>
+        <tr>
+          <td><strong>개발자</strong></td>
+          <td>신진우</td>
+        </tr>
+        <tr>
+          <td><strong>이메일</strong></td>
+          <td>tlswlsdn93@gmail.com</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>개인정보와 관련된 문의, 불만, 피해 구제는 위 이메일로 연락해주시기 바랍니다.</p>
+
+    <div class="footer">
+      &copy; 2026 Kiping. All rights reserved.
+    </div>
+  </div>
+</body>
+</html>

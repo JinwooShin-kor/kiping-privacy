@@ -3,328 +3,1237 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kiping - 개인정보처리방침</title>
+  <title>Kiping - AI 뉴스 키워드 모니터링</title>
+  <meta name="description" content="키워드만 등록하면 AI가 15개 이상 뉴스 출처에서 관련 기사를 찾아 실시간 알림으로 전달합니다.">
+  <meta name="theme-color" content="#1D4ED8">
+  <meta property="og:title" content="Kiping - AI 뉴스 키워드 모니터링">
+  <meta property="og:description" content="키워드만 등록하면 AI가 뉴스를 찾아 실시간 알림으로 전달합니다.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://jinwooshin-kor.github.io/kiping-privacy/">
+  <link rel="icon" href="images/app-icon.png" type="image/png">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
     body {
-      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f8f9fa;
-      color: #1a1a2e;
-      line-height: 1.8;
+      font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+      color: #e2e8f0;
+      background: #0F172A;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
     }
-    .container {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 40px 24px 80px;
+    img { display: block; max-width: 100%; height: auto; }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; border: none; background: none; font: inherit; }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-16px); }
     }
-    .header {
-      text-align: center;
-      margin-bottom: 48px;
-      padding-bottom: 32px;
-      border-bottom: 1px solid #e2e8f0;
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .header h1 {
-      font-size: 28px;
+    @keyframes fadeLeft {
+      from { opacity: 0; transform: translateX(60px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeRight {
+      from { opacity: 0; transform: translateX(-60px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.85); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(37, 99, 235, 0.6); }
+    }
+
+    .anim { opacity: 0; transition: opacity 0.7s ease, transform 0.7s ease; }
+    .anim.fade-up { transform: translateY(40px); }
+    .anim.fade-left { transform: translateX(60px); }
+    .anim.fade-right { transform: translateX(-60px); }
+    .anim.scale-in { transform: scale(0.85); }
+    .anim.visible { opacity: 1; transform: translateY(0) translateX(0) scale(1); }
+
+    /* ===== NAV ===== */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
+    }
+    .nav.scrolled {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 20px;
+      color: #fff;
+    }
+    .nav-brand img {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+    }
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      background: #2563EB;
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      border-radius: 12px;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { background: #1D4ED8; transform: translateY(-1px); }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at 30% 20%, #2563EB 0%, #1D4ED8 40%, #1E3A8A 100%);
+      padding: 120px 24px 80px;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -30%;
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(96, 165, 250, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .hero-inner {
+      max-width: 1200px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .hero-text { position: relative; z-index: 2; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #bfdbfe;
+      margin-bottom: 20px;
+      backdrop-filter: blur(4px);
+    }
+    .hero-badge-dot {
+      width: 6px; height: 6px;
+      background: #34d399;
+      border-radius: 50%;
+      animation: pulseGlow 2s infinite;
+      box-shadow: 0 0 6px #34d399;
+    }
+    .hero-title {
+      font-size: clamp(36px, 5vw, 56px);
       font-weight: 800;
-      color: #1D4ED8;
-      margin-bottom: 8px;
+      line-height: 1.15;
+      color: #fff;
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
     }
-    .header .app-name {
-      font-size: 15px;
+    .hero-title span {
+      background: linear-gradient(135deg, #93c5fd, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-desc {
+      font-size: clamp(16px, 2vw, 19px);
+      color: #cbd5e1;
+      line-height: 1.7;
+      margin-bottom: 36px;
+      max-width: 480px;
+    }
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+    }
+    .store-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 24px;
+      background: #000;
+      border-radius: 14px;
+      color: #fff;
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .store-badge:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .store-badge-text { text-align: left; }
+    .store-badge-text small { display: block; font-size: 11px; color: #94a3b8; line-height: 1.2; }
+    .store-badge-text strong { display: block; font-size: 16px; font-weight: 600; line-height: 1.3; }
+    .store-badge svg { width: 28px; height: 28px; flex-shrink: 0; }
+
+    /* Phone Mockup */
+    .hero-phone-wrap {
+      display: flex;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+    .phone-mockup {
+      position: relative;
+      width: 280px;
+      animation: float 6s ease-in-out infinite;
+    }
+    .phone-frame {
+      position: relative;
+      border-radius: 44px;
+      border: 6px solid #1a1a2e;
+      background: #000;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 2px rgba(255,255,255,0.1),
+        0 20px 60px rgba(0,0,0,0.4),
+        0 0 80px rgba(37, 99, 235, 0.15);
+    }
+    .phone-frame::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 120px; height: 28px;
+      background: #1a1a2e;
+      border-radius: 0 0 20px 20px;
+      z-index: 10;
+    }
+    .phone-frame img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 9/19.5;
+      object-fit: cover;
+      object-position: top;
+    }
+    .phone-glow {
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.25) 0%, transparent 70%);
+      z-index: -1;
+      border-radius: 50%;
+      filter: blur(40px);
+    }
+
+    /* Wave */
+    .hero-wave {
+      position: absolute;
+      bottom: -2px; left: 0; right: 0;
+      z-index: 3;
+    }
+    .hero-wave svg { display: block; width: 100%; height: auto; }
+
+    /* ===== SOCIAL PROOF ===== */
+    .social-proof {
+      background: #F8FAFC;
+      padding: 56px 24px;
+    }
+    .social-proof-grid {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+    }
+    .proof-item {
+      text-align: center;
+    }
+    .proof-icon {
+      width: 48px; height: 48px;
+      margin: 0 auto 12px;
+      background: #EFF6FF;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .proof-icon svg { width: 24px; height: 24px; color: #2563EB; }
+    .proof-value {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0F172A;
+      margin-bottom: 4px;
+    }
+    .proof-label {
+      font-size: 14px;
       color: #64748b;
       font-weight: 500;
     }
-    .header .date {
-      font-size: 13px;
-      color: #94a3b8;
-      margin-top: 12px;
+
+    /* ===== FEATURE SECTIONS ===== */
+    .feature-section {
+      padding: 100px 24px;
+      overflow: hidden;
     }
-    h2 {
-      font-size: 20px;
-      font-weight: 700;
-      color: #1a1a2e;
-      margin-top: 40px;
-      margin-bottom: 16px;
-      padding-left: 14px;
-      border-left: 3px solid #1D4ED8;
+    .feature-section.dark {
+      background: #0F172A;
+      color: #e2e8f0;
     }
-    h3 {
-      font-size: 16px;
+    .feature-section.dark-gradient {
+      background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
+      color: #e2e8f0;
+    }
+    .feature-section.light {
+      background: #F8FAFC;
+      color: #0F172A;
+    }
+    .feature-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .feature-inner.reverse { direction: rtl; }
+    .feature-inner.reverse > * { direction: ltr; }
+    .feature-text {}
+    .feature-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 100px;
+      font-size: 12px;
       font-weight: 600;
-      color: #334155;
-      margin-top: 24px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+    .dark .feature-tag, .dark-gradient .feature-tag {
+      background: rgba(37, 99, 235, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(37, 99, 235, 0.3);
+    }
+    .light .feature-tag {
+      background: #EFF6FF;
+      color: #2563EB;
+      border: 1px solid #BFDBFE;
+    }
+    .feature-title {
+      font-size: clamp(26px, 3vw, 36px);
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 16px;
+      letter-spacing: -0.01em;
+    }
+    .dark .feature-title, .dark-gradient .feature-title { color: #fff; }
+    .light .feature-title { color: #0F172A; }
+    .feature-desc {
+      font-size: 16px;
+      line-height: 1.75;
+      margin-bottom: 24px;
+    }
+    .dark .feature-desc, .dark-gradient .feature-desc { color: #94a3b8; }
+    .light .feature-desc { color: #64748b; }
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 15px;
+    }
+    .dark .feature-list li, .dark-gradient .feature-list li { color: #cbd5e1; }
+    .light .feature-list li { color: #475569; }
+    .feature-list-icon {
+      flex-shrink: 0;
+      width: 22px; height: 22px;
+      background: rgba(34, 197, 94, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+    .feature-list-icon svg { width: 12px; height: 12px; color: #22c55e; }
+
+    .feature-phone-wrap {
+      display: flex;
+      justify-content: center;
+    }
+    .feature-phone {
+      width: 260px;
+    }
+    .feature-phone .phone-frame {
+      box-shadow:
+        0 0 0 2px rgba(255,255,255,0.06),
+        0 16px 48px rgba(0,0,0,0.35);
+    }
+    .light .feature-phone .phone-frame {
+      border-color: #2d2d3a;
+      box-shadow:
+        0 0 0 2px rgba(0,0,0,0.05),
+        0 20px 60px rgba(0,0,0,0.12);
+    }
+
+    /* Community card (no screenshot) */
+    .community-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .community-card {
+      padding: 24px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      text-align: center;
+      transition: transform 0.3s, background 0.3s;
+    }
+    .community-card:hover {
+      transform: translateY(-4px);
+      background: rgba(255,255,255,0.07);
+    }
+    .community-card-icon {
+      font-size: 32px;
       margin-bottom: 10px;
     }
-    p {
+    .community-card-title {
       font-size: 15px;
-      color: #475569;
-      margin-bottom: 12px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
     }
-    ul, ol {
-      padding-left: 20px;
-      margin-bottom: 12px;
-    }
-    li {
-      font-size: 15px;
-      color: #475569;
-      margin-bottom: 6px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 16px 0 20px;
-      font-size: 14px;
-    }
-    th {
-      background: #f1f5f9;
-      color: #334155;
-      font-weight: 600;
-      padding: 12px 14px;
-      text-align: left;
-      border: 1px solid #e2e8f0;
-    }
-    td {
-      padding: 10px 14px;
-      border: 1px solid #e2e8f0;
-      color: #475569;
-      vertical-align: top;
-    }
-    .info-box {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 10px;
-      padding: 16px 20px;
-      margin: 16px 0;
-    }
-    .info-box p {
-      color: #1e40af;
-      margin: 0;
-      font-size: 14px;
-    }
-    .footer {
-      text-align: center;
-      margin-top: 60px;
-      padding-top: 24px;
-      border-top: 1px solid #e2e8f0;
-      color: #94a3b8;
+    .community-card-desc {
       font-size: 13px;
+      color: #94a3b8;
     }
-    @media (max-width: 600px) {
-      .container { padding: 24px 16px 60px; }
-      .header h1 { font-size: 24px; }
-      h2 { font-size: 18px; }
-      table { font-size: 13px; }
-      th, td { padding: 8px 10px; }
+
+    /* ===== NEWS SOURCES ===== */
+    .sources-section {
+      background: #0B1120;
+      padding: 72px 0;
+      overflow: hidden;
+    }
+    .sources-title {
+      text-align: center;
+      font-size: clamp(24px, 3vw, 32px);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 8px;
+      padding: 0 24px;
+    }
+    .sources-subtitle {
+      text-align: center;
+      font-size: 15px;
+      color: #64748b;
+      margin-bottom: 40px;
+      padding: 0 24px;
+    }
+    .ticker-wrap {
+      position: relative;
+      width: 100%;
+    }
+    .ticker-wrap::before,
+    .ticker-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 100px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .ticker-wrap::before {
+      left: 0;
+      background: linear-gradient(to right, #0B1120, transparent);
+    }
+    .ticker-wrap::after {
+      right: 0;
+      background: linear-gradient(to left, #0B1120, transparent);
+    }
+    .ticker {
+      display: flex;
+      animation: ticker 40s linear infinite;
+      width: max-content;
+    }
+    .ticker-item {
+      flex-shrink: 0;
+      padding: 12px 28px;
+      margin: 0 8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #94a3b8;
+      white-space: nowrap;
+      transition: color 0.3s, border-color 0.3s;
+    }
+    .ticker-item:hover {
+      color: #e2e8f0;
+      border-color: rgba(37, 99, 235, 0.4);
+    }
+
+    /* ===== HOW-TO STEPS ===== */
+    .steps-section {
+      background: #F8FAFC;
+      padding: 100px 24px;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .section-header h2 {
+      font-size: clamp(28px, 3.5vw, 40px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    .steps-section .section-header h2 { color: #0F172A; }
+    .section-header p {
+      font-size: 17px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .steps-section .section-header p { color: #64748b; }
+    .steps-grid {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      position: relative;
+    }
+    .steps-grid::before {
+      content: '';
+      position: absolute;
+      top: 48px;
+      left: calc(16.66% + 20px);
+      right: calc(16.66% + 20px);
+      height: 2px;
+      background: repeating-linear-gradient(to right, #cbd5e1 0, #cbd5e1 8px, transparent 8px, transparent 16px);
+    }
+    .step-card {
+      text-align: center;
+      position: relative;
+    }
+    .step-number {
+      width: 56px; height: 56px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #2563EB, #1D4ED8);
+      color: #fff;
+      font-size: 22px;
+      font-weight: 800;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+    }
+    .step-icon {
+      font-size: 36px;
+      margin-bottom: 14px;
+    }
+    .step-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0F172A;
+      margin-bottom: 8px;
+    }
+    .step-desc {
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.7;
+    }
+
+    /* ===== FINAL CTA ===== */
+    .cta-section {
+      background: radial-gradient(ellipse at 50% 50%, #2563EB 0%, #1D4ED8 50%, #1E3A8A 100%);
+      padding: 100px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .cta-icon {
+      width: 80px; height: 80px;
+      margin: 0 auto 24px;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .cta-icon img { width: 100%; height: 100%; }
+    .cta-title {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+    .cta-desc {
+      font-size: 17px;
+      color: #bfdbfe;
+      margin-bottom: 36px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cta-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      background: #0B1120;
+      padding: 48px 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .footer-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .footer-brand img {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+    }
+    .footer-brand span {
+      font-size: 16px;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .footer-links a {
+      font-size: 14px;
+      color: #64748b;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: #e2e8f0; }
+    .footer-copy {
+      width: 100%;
+      text-align: center;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin-top: 8px;
+      font-size: 13px;
+      color: #475569;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      .hero-inner { gap: 40px; }
+      .feature-inner { gap: 40px; }
+    }
+
+    @media (max-width: 768px) {
+      .hero { padding: 100px 24px 60px; min-height: auto; }
+      .hero-inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 48px;
+      }
+      .hero-desc { margin-left: auto; margin-right: auto; }
+      .hero-buttons { justify-content: center; }
+      .hero-phone-wrap { order: -1; }
+      .phone-mockup { width: 220px; }
+
+      .social-proof-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+      }
+
+      .feature-section { padding: 72px 24px; }
+      .feature-inner,
+      .feature-inner.reverse {
+        grid-template-columns: 1fr;
+        direction: ltr;
+        text-align: center;
+      }
+      .feature-inner.reverse > * { direction: ltr; }
+      .feature-phone-wrap { order: -1; }
+      .feature-phone { width: 220px; }
+      .feature-list { align-items: center; }
+      .community-cards { max-width: 360px; margin: 0 auto; }
+
+      .steps-grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+        max-width: 400px;
+      }
+      .steps-grid::before { display: none; }
+
+      .footer-inner { justify-content: center; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+
+    @media (max-width: 480px) {
+      .nav { padding: 0 16px; }
+      .nav-brand { font-size: 17px; }
+      .nav-brand img { width: 30px; height: 30px; }
+      .nav-cta { padding: 8px 16px; font-size: 13px; }
+      .hero { padding: 88px 20px 48px; }
+      .phone-mockup { width: 200px; }
+      .feature-phone { width: 200px; }
+      .proof-value { font-size: 18px; }
+      .store-badge { padding: 10px 18px; }
+      .store-badge-text strong { font-size: 14px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>개인정보처리방침</h1>
-      <div class="app-name">Kiping (키핑) - AI 뉴스 키워드 모니터링</div>
-      <div class="date">시행일: 2026년 2월 22일 | 최종 수정일: 2026년 2월 22일</div>
-    </div>
 
-    <p>
-      Kiping(이하 "서비스")은 이용자의 개인정보를 중요하게 생각하며, 「개인정보 보호법」 등 관련 법령을 준수합니다.
-      본 개인정보처리방침은 서비스가 수집하는 개인정보의 항목, 수집 목적, 보관 기간 및 이용자의 권리에 대해 안내합니다.
+  <!-- ===== NAV ===== -->
+  <nav class="nav" id="nav">
+    <a href="#" class="nav-brand">
+      <img src="images/app-icon.png" alt="Kiping" width="36" height="36">
+      Kiping
+    </a>
+    <a href="#download" class="nav-cta">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      다운로드
+    </a>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="hero-badge anim fade-up">
+          <span class="hero-badge-dot"></span>
+          AI 기반 뉴스 모니터링
+        </div>
+        <h1 class="hero-title anim fade-up" style="transition-delay:0.1s">
+          키워드만 등록하면<br>AI가 <span>뉴스를 찾아</span><br>알려드립니다
+        </h1>
+        <p class="hero-desc anim fade-up" style="transition-delay:0.2s">
+          관심 키워드를 등록하세요. 15개 이상의 뉴스 출처에서 AI가 관련 기사를 찾아 실시간으로 알려드립니다.
+        </p>
+        <div class="hero-buttons anim fade-up" style="transition-delay:0.3s">
+          <a href="https://apps.apple.com/app/kiping/id6742888193" class="store-badge" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 21.99 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 21.99C7.79 22.03 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>
+            <div class="store-badge-text">
+              <small>Download on the</small>
+              <strong>App Store</strong>
+            </div>
+          </a>
+          <a href="https://play.google.com/store/apps/details?id=com.kiping.app" class="store-badge" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 010 1.38l-2.302 2.302L15.104 12l2.594-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
+            <div class="store-badge-text">
+              <small>GET IT ON</small>
+              <strong>Google Play</strong>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="hero-phone-wrap">
+        <div class="phone-mockup anim scale-in" style="transition-delay:0.3s">
+          <div class="phone-glow"></div>
+          <div class="phone-frame">
+            <img src="images/screenshots/10.webp" alt="Kiping 홈 화면" width="268" height="580" loading="eager">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-wave">
+      <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0 40C240 80 480 100 720 80C960 60 1200 20 1440 40V100H0V40Z" fill="#F8FAFC"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ===== SOCIAL PROOF ===== -->
+  <section class="social-proof">
+    <div class="social-proof-grid">
+      <div class="proof-item anim fade-up">
+        <div class="proof-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 002-2V4a2 2 0 00-2-2H8a2 2 0 00-2 2v16a2 2 0 01-2 2zm0 0a2 2 0 01-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6z"/></svg>
+        </div>
+        <div class="proof-value">15+</div>
+        <div class="proof-label">뉴스 출처</div>
+      </div>
+      <div class="proof-item anim fade-up" style="transition-delay:0.1s">
+        <div class="proof-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="proof-value">24시간</div>
+        <div class="proof-label">실시간 모니터링</div>
+      </div>
+      <div class="proof-item anim fade-up" style="transition-delay:0.2s">
+        <div class="proof-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 014 4c0 1.95-2 4-4 8-2-4-4-6.05-4-8a4 4 0 014-4z"/><path d="M12 18v4"/><path d="M8 22h8"/></svg>
+        </div>
+        <div class="proof-value">AI 기반</div>
+        <div class="proof-label">지능형 매칭</div>
+      </div>
+      <div class="proof-item anim fade-up" style="transition-delay:0.3s">
+        <div class="proof-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        </div>
+        <div class="proof-value">실시간</div>
+        <div class="proof-label">푸시 알림</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURE 1: AI 키워드 모니터링 ===== -->
+  <section class="feature-section dark">
+    <div class="feature-inner">
+      <div class="feature-text">
+        <div class="feature-tag anim fade-up">Core Feature</div>
+        <h2 class="feature-title anim fade-up" style="transition-delay:0.1s">AI 키워드 모니터링</h2>
+        <p class="feature-desc anim fade-up" style="transition-delay:0.15s">
+          관심 키워드를 등록하고 세부 설명을 추가하면, AI가 정확히 원하는 뉴스만 골라냅니다. 불필요한 기사는 자동으로 걸러집니다.
+        </p>
+        <ul class="feature-list anim fade-up" style="transition-delay:0.2s">
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            키워드 + 세부 설명으로 정밀 필터링
+          </li>
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            AI가 관련도를 분석하여 정확한 매칭
+          </li>
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            키워드별 매칭 현황 실시간 확인
+          </li>
+        </ul>
+      </div>
+      <div class="feature-phone-wrap anim fade-left" style="transition-delay:0.2s">
+        <div class="feature-phone">
+          <div class="phone-frame">
+            <img src="images/screenshots/04.webp" alt="키워드 관리 화면" width="248" height="537" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURE 2: 실시간 푸시 알림 ===== -->
+  <section class="feature-section light">
+    <div class="feature-inner reverse">
+      <div class="feature-text">
+        <div class="feature-tag anim fade-up">Real-time Alert</div>
+        <h2 class="feature-title anim fade-up" style="transition-delay:0.1s">실시간 푸시 알림</h2>
+        <p class="feature-desc anim fade-up" style="transition-delay:0.15s">
+          키워드와 매칭된 뉴스가 발견되면 즉시 알림을 보내드립니다. 중요한 소식을 놓치지 마세요.
+        </p>
+        <ul class="feature-list anim fade-up" style="transition-delay:0.2s">
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            키워드별 알림 ON/OFF 개별 설정
+          </li>
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            방해금지 시간대 설정
+          </li>
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            알림 히스토리에서 지난 알림 확인
+          </li>
+        </ul>
+      </div>
+      <div class="feature-phone-wrap anim fade-right" style="transition-delay:0.2s">
+        <div class="feature-phone">
+          <div class="phone-frame">
+            <img src="images/screenshots/09.webp" alt="알림 목록 화면" width="248" height="537" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURE 3: AI 일일 리포트 ===== -->
+  <section class="feature-section dark-gradient">
+    <div class="feature-inner">
+      <div class="feature-text">
+        <div class="feature-tag anim fade-up">AI Report</div>
+        <h2 class="feature-title anim fade-up" style="transition-delay:0.1s">AI 일일 리포트</h2>
+        <p class="feature-desc anim fade-up" style="transition-delay:0.15s">
+          매일 AI가 키워드별 뉴스를 분석하여 핵심 요약 리포트를 생성합니다. 바쁜 하루, 한눈에 파악하세요.
+        </p>
+        <ul class="feature-list anim fade-up" style="transition-delay:0.2s">
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            키워드별 수집 현황 및 핵심 요약
+          </li>
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            주요 토픽과 관련 기사 링크
+          </li>
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            매일 자동 생성, 아침에 바로 확인
+          </li>
+        </ul>
+      </div>
+      <div class="feature-phone-wrap anim fade-left" style="transition-delay:0.2s">
+        <div class="feature-phone">
+          <div class="phone-frame">
+            <img src="images/screenshots/06.webp" alt="AI 리포트 화면" width="248" height="537" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURE 4: 맞춤 뉴스 피드 ===== -->
+  <section class="feature-section light">
+    <div class="feature-inner reverse">
+      <div class="feature-text">
+        <div class="feature-tag anim fade-up">News Feed</div>
+        <h2 class="feature-title anim fade-up" style="transition-delay:0.1s">맞춤 뉴스 피드</h2>
+        <p class="feature-desc anim fade-up" style="transition-delay:0.15s">
+          등록한 키워드에 맞는 기사만 모아보는 나만의 뉴스 피드. 뉴스, YouTube 영상까지 한 곳에서 확인하세요.
+        </p>
+        <ul class="feature-list anim fade-up" style="transition-delay:0.2s">
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            키워드별/소스별 필터링
+          </li>
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            뉴스 기사 + YouTube 영상 통합
+          </li>
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            AI 관련도 점수 표시
+          </li>
+        </ul>
+      </div>
+      <div class="feature-phone-wrap anim fade-right" style="transition-delay:0.2s">
+        <div class="feature-phone">
+          <div class="phone-frame">
+            <img src="images/screenshots/03.webp" alt="뉴스 피드 화면" width="248" height="537" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURE 5: 커뮤니티 ===== -->
+  <section class="feature-section dark">
+    <div class="feature-inner">
+      <div class="feature-text">
+        <div class="feature-tag anim fade-up">Community</div>
+        <h2 class="feature-title anim fade-up" style="transition-delay:0.1s">관심사 기반 커뮤니티</h2>
+        <p class="feature-desc anim fade-up" style="transition-delay:0.15s">
+          같은 키워드에 관심 있는 사람들과 소통하세요. 그룹을 만들어 정보를 공유하고 토론할 수 있습니다.
+        </p>
+        <ul class="feature-list anim fade-up" style="transition-delay:0.2s">
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            관심사별 그룹 생성 및 참여
+          </li>
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            게시글, 좋아요, 댓글로 소통
+          </li>
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            뉴스 기사 공유 및 의견 교환
+          </li>
+        </ul>
+      </div>
+      <div class="feature-phone-wrap anim fade-left" style="transition-delay:0.2s">
+        <div class="community-cards">
+          <div class="community-card">
+            <div class="community-card-icon">👥</div>
+            <div class="community-card-title">그룹 토론</div>
+            <div class="community-card-desc">관심사별 그룹 참여</div>
+          </div>
+          <div class="community-card">
+            <div class="community-card-icon">📰</div>
+            <div class="community-card-title">뉴스 공유</div>
+            <div class="community-card-desc">기사 공유 및 의견</div>
+          </div>
+          <div class="community-card">
+            <div class="community-card-icon">💬</div>
+            <div class="community-card-title">실시간 소통</div>
+            <div class="community-card-desc">댓글로 의견 교환</div>
+          </div>
+          <div class="community-card">
+            <div class="community-card-icon">🔔</div>
+            <div class="community-card-title">그룹 알림</div>
+            <div class="community-card-desc">새 글 알림 수신</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURE 6: 트렌드 탐색 ===== -->
+  <section class="feature-section light">
+    <div class="feature-inner reverse">
+      <div class="feature-text">
+        <div class="feature-tag anim fade-up">Insight</div>
+        <h2 class="feature-title anim fade-up" style="transition-delay:0.1s">트렌드 탐색 & 인사이트</h2>
+        <p class="feature-desc anim fade-up" style="transition-delay:0.15s">
+          키워드별 감정 분석, 주간 리딩 통계, 실시간 뜨는 토픽까지. 데이터 기반 인사이트로 트렌드를 읽으세요.
+        </p>
+        <ul class="feature-list anim fade-up" style="transition-delay:0.2s">
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            키워드별 뉴스 감정 분석 분포
+          </li>
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            주간 리딩 통계 및 연속 사용 기록
+          </li>
+          <li>
+            <span class="feature-list-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            실시간 인기 토픽 탐색
+          </li>
+        </ul>
+      </div>
+      <div class="feature-phone-wrap anim fade-right" style="transition-delay:0.2s">
+        <div class="feature-phone">
+          <div class="phone-frame">
+            <img src="images/screenshots/10.webp" alt="인사이트 화면" width="248" height="537" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== NEWS SOURCES ===== -->
+  <section class="sources-section">
+    <h2 class="sources-title anim fade-up">다양한 뉴스 출처</h2>
+    <p class="sources-subtitle anim fade-up" style="transition-delay:0.1s">국내 주요 언론사와 글로벌 미디어를 실시간으로 수집합니다</p>
+    <div class="ticker-wrap">
+      <div class="ticker">
+        <span class="ticker-item">조선일보</span>
+        <span class="ticker-item">한겨레</span>
+        <span class="ticker-item">연합뉴스</span>
+        <span class="ticker-item">매일경제</span>
+        <span class="ticker-item">한국경제</span>
+        <span class="ticker-item">SBS 뉴스</span>
+        <span class="ticker-item">KBS 뉴스</span>
+        <span class="ticker-item">MBC 뉴스</span>
+        <span class="ticker-item">중앙일보</span>
+        <span class="ticker-item">동아일보</span>
+        <span class="ticker-item">서울경제</span>
+        <span class="ticker-item">아시아경제</span>
+        <span class="ticker-item">YouTube</span>
+        <span class="ticker-item">이데일리</span>
+        <span class="ticker-item">파이낸셜뉴스</span>
+        <!-- Duplicate for seamless loop -->
+        <span class="ticker-item">조선일보</span>
+        <span class="ticker-item">한겨레</span>
+        <span class="ticker-item">연합뉴스</span>
+        <span class="ticker-item">매일경제</span>
+        <span class="ticker-item">한국경제</span>
+        <span class="ticker-item">SBS 뉴스</span>
+        <span class="ticker-item">KBS 뉴스</span>
+        <span class="ticker-item">MBC 뉴스</span>
+        <span class="ticker-item">중앙일보</span>
+        <span class="ticker-item">동아일보</span>
+        <span class="ticker-item">서울경제</span>
+        <span class="ticker-item">아시아경제</span>
+        <span class="ticker-item">YouTube</span>
+        <span class="ticker-item">이데일리</span>
+        <span class="ticker-item">파이낸셜뉴스</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== HOW-TO STEPS ===== -->
+  <section class="steps-section">
+    <div class="section-header">
+      <h2 class="anim fade-up">이렇게 사용하세요</h2>
+      <p class="anim fade-up" style="transition-delay:0.1s">3단계로 시작하는 나만의 뉴스 모니터링</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card anim fade-up" style="transition-delay:0.1s">
+        <div class="step-number">1</div>
+        <div class="step-icon">🔑</div>
+        <h3 class="step-title">키워드 등록</h3>
+        <p class="step-desc">모니터링할 키워드를 등록하고<br>세부 설명으로 원하는 뉴스를<br>정확하게 설정하세요</p>
+      </div>
+      <div class="step-card anim fade-up" style="transition-delay:0.25s">
+        <div class="step-number">2</div>
+        <div class="step-icon">🤖</div>
+        <h3 class="step-title">AI 자동 수집</h3>
+        <p class="step-desc">AI가 24시간 뉴스를 모니터링하고<br>키워드와 관련된 기사를<br>자동으로 찾아냅니다</p>
+      </div>
+      <div class="step-card anim fade-up" style="transition-delay:0.4s">
+        <div class="step-number">3</div>
+        <div class="step-icon">🔔</div>
+        <h3 class="step-title">맞춤 알림 수신</h3>
+        <p class="step-desc">매칭된 뉴스를 실시간 푸시 알림으로<br>받아보고, 일일 리포트로<br>한눈에 확인하세요</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FINAL CTA ===== -->
+  <section class="cta-section" id="download">
+    <div class="cta-icon anim scale-in">
+      <img src="images/app-icon.png" alt="Kiping" width="80" height="80">
+    </div>
+    <h2 class="cta-title anim fade-up" style="transition-delay:0.1s">지금 바로 시작하세요</h2>
+    <p class="cta-desc anim fade-up" style="transition-delay:0.15s">
+      키워드만 등록하면 AI가 알아서 뉴스를 찾아드립니다.<br>무료로 시작해보세요.
     </p>
-
-    <h2>1. 수집하는 개인정보 항목</h2>
-
-    <table>
-      <thead>
-        <tr>
-          <th>구분</th>
-          <th>수집 항목</th>
-          <th>수집 방법</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>회원가입</td>
-          <td>이메일 주소, 이름(닉네임), 프로필 사진 URL</td>
-          <td>Google/Kakao 소셜 로그인</td>
-        </tr>
-        <tr>
-          <td>서비스 이용</td>
-          <td>등록 키워드, 키워드 상세 설명, 관심 분야, 뉴스 열람 기록, 좋아요/댓글 활동</td>
-          <td>앱 내 직접 입력 및 자동 수집</td>
-        </tr>
-        <tr>
-          <td>알림</td>
-          <td>FCM 푸시 토큰, 알림 설정(ON/OFF, 빈도, 조용한 시간대)</td>
-          <td>기기에서 자동 생성</td>
-        </tr>
-        <tr>
-          <td>커뮤니티</td>
-          <td>게시글 제목/내용, 업로드 이미지/영상, 해시태그</td>
-          <td>앱 내 직접 입력</td>
-        </tr>
-        <tr>
-          <td>자동 수집</td>
-          <td>기기 정보(OS 종류), 앱 사용 통계(화면 방문 기록), 활동 히트맵</td>
-          <td>서비스 이용 시 자동 수집</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="info-box">
-      <p>Kiping은 주민등록번호, 결제 정보, 위치 정보 등 민감한 개인정보를 수집하지 않습니다.</p>
+    <div class="cta-buttons anim fade-up" style="transition-delay:0.25s">
+      <a href="https://apps.apple.com/app/kiping/id6742888193" class="store-badge" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 21.99 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 21.99C7.79 22.03 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>
+        <div class="store-badge-text">
+          <small>Download on the</small>
+          <strong>App Store</strong>
+        </div>
+      </a>
+      <a href="https://play.google.com/store/apps/details?id=com.kiping.app" class="store-badge" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="28" height="28"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 01-.61-.92V2.734a1 1 0 01.609-.92zm10.89 10.893l2.302 2.302-10.937 6.333 8.635-8.635zm3.199-3.199l2.302 2.302a1 1 0 010 1.38l-2.302 2.302L15.104 12l2.594-2.492zM5.864 2.658L16.8 8.99l-2.302 2.302-8.634-8.634z"/></svg>
+        <div class="store-badge-text">
+          <small>GET IT ON</small>
+          <strong>Google Play</strong>
+        </div>
+      </a>
     </div>
+  </section>
 
-    <h2>2. 개인정보의 수집 및 이용 목적</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>목적</th>
-          <th>상세 설명</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>회원 관리</td>
-          <td>회원 식별, 로그인 인증, 계정 관리</td>
-        </tr>
-        <tr>
-          <td>맞춤형 뉴스 제공</td>
-          <td>등록된 키워드 기반 뉴스 매칭 및 피드 생성</td>
-        </tr>
-        <tr>
-          <td>AI 분석</td>
-          <td>뉴스 기사의 키워드 관련도 분석, 일일 AI 리포트 생성, 홈 인사이트 생성</td>
-        </tr>
-        <tr>
-          <td>알림 발송</td>
-          <td>키워드 매칭 뉴스 실시간 푸시 알림, 인앱 알림</td>
-        </tr>
-        <tr>
-          <td>커뮤니티 운영</td>
-          <td>게시글 작성/관리, 좋아요/댓글 기능, 그룹 운영</td>
-        </tr>
-        <tr>
-          <td>서비스 개선</td>
-          <td>사용 통계 분석, 인기 키워드 파악, 서비스 품질 향상</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h2>3. 개인정보의 보유 및 이용 기간</h2>
-    <ul>
-      <li><strong>회원 탈퇴 시:</strong> 지체 없이 파기합니다.</li>
-      <li><strong>뉴스 기사 데이터:</strong> 수집일로부터 30일 후 자동 삭제됩니다.</li>
-      <li><strong>활동 기록:</strong> 최근 90일간 보관 후 자동 삭제됩니다.</li>
-      <li><strong>커뮤니티 게시글:</strong> 회원 탈퇴 또는 직접 삭제 시 파기됩니다.</li>
-      <li><strong>FCM 토큰:</strong> 로그아웃 또는 회원 탈퇴 시 즉시 삭제됩니다.</li>
-    </ul>
-    <p>단, 관련 법령에 따라 보관이 필요한 경우 해당 기간 동안 보관합니다.</p>
-
-    <h2>4. 개인정보의 제3자 제공</h2>
-    <p>Kiping은 원칙적으로 이용자의 개인정보를 외부에 제공하지 않습니다. 다만, 서비스 운영을 위해 다음의 외부 서비스를 이용합니다:</p>
-
-    <table>
-      <thead>
-        <tr>
-          <th>서비스</th>
-          <th>제공 업체</th>
-          <th>이용 목적</th>
-          <th>제공 항목</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>인증 및 데이터베이스</td>
-          <td>Supabase Inc.</td>
-          <td>회원 인증, 데이터 저장</td>
-          <td>이메일, 프로필, 키워드, 활동 데이터</td>
-        </tr>
-        <tr>
-          <td>푸시 알림</td>
-          <td>Google (Firebase Cloud Messaging)</td>
-          <td>푸시 알림 전송</td>
-          <td>FCM 토큰, 알림 내용</td>
-        </tr>
-        <tr>
-          <td>AI 분석</td>
-          <td>Anthropic</td>
-          <td>뉴스 관련도 분석, AI 리포트 생성</td>
-          <td>뉴스 기사 제목/내용 (비식별 데이터)</td>
-        </tr>
-        <tr>
-          <td>소셜 로그인</td>
-          <td>Google, Kakao</td>
-          <td>간편 로그인</td>
-          <td>인증 토큰 (OAuth)</td>
-        </tr>
-        <tr>
-          <td>미디어 저장</td>
-          <td>Supabase Storage</td>
-          <td>커뮤니티 이미지/영상 저장</td>
-          <td>업로드 미디어 파일</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h2>5. 개인정보의 파기 절차 및 방법</h2>
-    <ul>
-      <li>이용 목적이 달성되거나 보유 기간이 경과한 개인정보는 지체 없이 파기합니다.</li>
-      <li>전자적 파일: 복구 불가능한 방법으로 영구 삭제합니다.</li>
-      <li>커뮤니티 미디어 파일: 게시글 삭제 시 스토리지에서 함께 삭제됩니다.</li>
-    </ul>
-
-    <h2>6. 이용자의 권리 및 행사 방법</h2>
-    <p>이용자는 언제든지 다음의 권리를 행사할 수 있습니다:</p>
-    <ul>
-      <li><strong>개인정보 열람 요청:</strong> 앱 내 설정에서 본인의 정보를 확인할 수 있습니다.</li>
-      <li><strong>개인정보 수정:</strong> 프로필, 키워드, 알림 설정 등을 직접 수정할 수 있습니다.</li>
-      <li><strong>회원 탈퇴:</strong> 앱 내 설정에서 계정 삭제를 요청할 수 있으며, 모든 데이터가 즉시 삭제됩니다.</li>
-      <li><strong>알림 수신 거부:</strong> 앱 내 설정 또는 기기 설정에서 푸시 알림을 비활성화할 수 있습니다.</li>
-      <li><strong>게시글 삭제:</strong> 본인이 작성한 커뮤니티 게시글 및 댓글을 직접 삭제할 수 있습니다.</li>
-    </ul>
-
-    <h2>7. 개인정보의 안전성 확보 조치</h2>
-    <p>Kiping은 이용자의 개인정보를 안전하게 보호하기 위해 다음과 같은 조치를 취합니다:</p>
-    <ul>
-      <li>모든 데이터 전송 시 SSL/TLS 암호화 적용</li>
-      <li>데이터베이스 접근 시 행 수준 보안(Row Level Security) 적용</li>
-      <li>API 호출 시 JWT 기반 인증 적용</li>
-      <li>비밀번호는 저장하지 않음 (소셜 로그인만 지원)</li>
-      <li>서비스 키 및 민감 정보는 환경 변수로 안전하게 관리</li>
-    </ul>
-
-    <h2>8. 쿠키 및 자동 수집 장치</h2>
-    <p>Kiping 모바일 앱은 쿠키를 사용하지 않습니다. 서비스 이용 과정에서 앱 사용 통계(화면 방문 횟수)가 자동으로 수집되며, 이는 서비스 개선 목적으로만 사용됩니다.</p>
-
-    <h2>9. 만 14세 미만 아동의 개인정보</h2>
-    <p>Kiping은 만 14세 미만 아동의 회원가입을 제한하지 않으나, 아동의 개인정보를 별도로 수집하지 않습니다. 법정대리인이 아동의 개인정보 처리에 동의하지 않는 경우, 해당 아동의 계정 삭제를 요청할 수 있습니다.</p>
-
-    <h2>10. 개인정보처리방침의 변경</h2>
-    <p>본 개인정보처리방침은 관련 법령 및 서비스 변경에 따라 수정될 수 있습니다. 변경 시 앱 내 공지 또는 본 페이지를 통해 안내합니다.</p>
-
-    <h2>11. 개인정보 보호 책임자 및 문의</h2>
-    <table>
-      <tbody>
-        <tr>
-          <td><strong>서비스명</strong></td>
-          <td>Kiping (키핑)</td>
-        </tr>
-        <tr>
-          <td><strong>개발자</strong></td>
-          <td>신진우</td>
-        </tr>
-        <tr>
-          <td><strong>이메일</strong></td>
-          <td>tlswlsdn93@gmail.com</td>
-        </tr>
-      </tbody>
-    </table>
-    <p>개인정보와 관련된 문의, 불만, 피해 구제는 위 이메일로 연락해주시기 바랍니다.</p>
-
-    <div class="footer">
-      &copy; 2026 Kiping. All rights reserved.
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="images/app-icon.png" alt="Kiping" width="32" height="32">
+        <span>Kiping</span>
+      </div>
+      <div class="footer-links">
+        <a href="privacy/">개인정보처리방침</a>
+        <a href="mailto:tlswlsdn93@gmail.com">문의하기</a>
+      </div>
+      <div class="footer-copy">
+        &copy; 2026 Kiping. All rights reserved.
+      </div>
     </div>
-  </div>
+  </footer>
+
+  <!-- ===== JS ===== -->
+  <script>
+    // Nav scroll effect
+    (function() {
+      var nav = document.getElementById('nav');
+      var threshold = 80;
+      var ticking = false;
+
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          requestAnimationFrame(function() {
+            if (window.scrollY > threshold) {
+              nav.classList.add('scrolled');
+            } else {
+              nav.classList.remove('scrolled');
+            }
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+    })();
+
+    // Intersection Observer for scroll animations
+    (function() {
+      var elements = document.querySelectorAll('.anim');
+
+      if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.1,
+          rootMargin: '0px 0px -40px 0px'
+        });
+
+        elements.forEach(function(el) {
+          observer.observe(el);
+        });
+      } else {
+        // Fallback: show all immediately
+        elements.forEach(function(el) {
+          el.classList.add('visible');
+        });
+      }
+    })();
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+      a.addEventListener('click', function(e) {
+        var target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
 </body>
 </html>
